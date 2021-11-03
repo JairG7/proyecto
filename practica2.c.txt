@@ -1,0 +1,89 @@
+#include <wiringPi.h>
+#include <stdio.h>
+#include <stdlib.h>
+#define LED0 21
+#define LED1 20
+#define LED2 16
+#define LED3 12
+#define In0 24
+#define In1 23
+int main()
+{
+        //Inicialización
+        wiringPiSetupGpio();
+        pinMode (LED0, OUTPUT);
+        pinMode (LED1, OUTPUT);
+        pinMode (LED2, OUTPUT);
+        pinMode (LED3, OUTPUT);
+        pinMode (In0, INPUT);
+        pinMode (In1, INPUT);
+
+        //Menú
+        printf("Estados\n");
+        printf("00 Blinking\n");
+        printf("01 Right\n");
+        printf("10 Left\n");
+        printf("11 OFF\n");
+
+
+        while (1){
+                //Primer Convinación 00
+                while(digitalRead(In0) == LOW && digitalRead(In1) == LOW){
+                digitalWrite (LED0, HIGH); //on
+                digitalWrite (LED1, HIGH); //on
+                digitalWrite (LED2, HIGH); //on
+                digitalWrite (LED3, HIGH); //on
+                delay(1000);               //Delay 1 segundo
+                digitalWrite (LED0, LOW); //OFF
+                digitalWrite (LED1, LOW); //OFF
+                digitalWrite (LED2, LOW); //OFF
+                digitalWrite (LED3, LOW); //OFF
+                if(digitalRead(In0) != LOW || digitalRead(In1) != LOW)
+                        break;
+ 		}
+                else delay(1000);
+
+                digitalWrite (LED2, LOW); //OFF
+                digitalWrite (LED3, HIGH); //on
+                if(digitalRead(In0) != LOW || digitalRead(In1) != HIGH){
+                        break;
+                        }
+                else delay(1000);
+
+                }
+
+                while(digitalRead(In0) == HIGH && digitalRead(In1) == LOW){
+
+                digitalWrite (LED0, LOW); //OFF
+                digitalWrite (LED3, HIGH); //on
+                if(digitalRead(In0) != HIGH || digitalRead(In1) != LOW){
+                        break;}
+                else delay(1000);
+
+
+                digitalWrite (LED3, LOW); //OFF
+                digitalWrite (LED2, HIGH); //On
+
+
+                if(digitalRead(In0) != HIGH || digitalRead(In1) != LOW){
+                        break;}
+                else delay(1000);
+
+                digitalWrite (LED2, LOW); //OFF
+                digitalWrite (LED1, HIGH); //On
+                if(digitalRead(In0) != HIGH || digitalRead(In1) != LOW){
+                        break;}
+                else delay(1000);
+
+                digitalWrite (LED1, LOW); //OFF
+                digitalWrite (LED0, HIGH); //On
+                if(digitalRead(In0) != HIGH || digitalRead(In1) != LOW){
+                        break;}
+		 else delay(1000);
+                }
+        }
+
+return 0;
+
+}
+

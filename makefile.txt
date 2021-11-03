@@ -1,0 +1,18 @@
+CC = gcc
+CFLAGS = -Wall -Werror
+OUTPUT = p3.out
+DEBUG = -g
+SOURCES = prac3.c
+WIRINGPI = wiringPi
+
+all:
+        $(CC) $(SOURCES) $(CFLAGS) -o $(OUTPUT) -l$(WIRINGPI)
+debug:
+        $(CC) $(SOURCES) $(CFLAGS) $(DEBUG) -o $(OUTPUT) -l$(WIRINGPI)
+
+clean:
+        rm -f $(OUTPUT)
+fresh:
+        make clean
+        make all
+
