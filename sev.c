@@ -8,12 +8,13 @@
 #include <unistd.h>
 #include <wiringPi.h>
 #include <wiringPiI2C.h>
-
+#include <softPwm.h>
 
 #define CONNECT_PORT 8000 //Port used for the next connection
 #define BACKLOG      10   //Limit of pending connections.
 #define MAXSOCKETS   10   //Limit of sockets.
-#define TIMETOSLEEP  10   //Time in seconds that pthread "SendMessages" will sleep.
+#define TIMETOSLEEP  3   //Time in seconds that pthread "SendMessages" will sleep.
+#define pwm_1 25U
 
 //#define TRUE 1
 //#define FALSE 0
@@ -25,7 +26,8 @@ int listSocket[MAXSOCKETS]={0};
 int socketIndex;
 pthread_mutex_t socketMutex = PTHREAD_MUTEX_INITIALIZER;
 int newSocketMember = 0;
-
+static int time_high = 0;
+static int cycle = 200U;
 typedef struct{
     int8_t SOF;
     int8_t SEN;
@@ -46,6 +48,7 @@ char buff[]="AA";
 void *SendMessages (void *ptr);
 void clientes(void);
 void i2ctransfer (void);
+void pwm(int8_t valacel);
 int main (int argc, char *argv[])
   {
     
@@ -53,7 +56,10 @@ int main (int argc, char *argv[])
 	servidorRespuesta.SEN=0X01;
 	servidorRespuesta.DT=bus;
         servidorRespuesta.CS=~(servidorRespuesta.SOF+servidorRespuesta.SEN+servidorRespuesta.DT);
-	wiringPiSetup();    
+	wiringPiSetup(); 
+        pinMode(pwm_1, SOFT_PWM_OUTPUT);
+        softPwmCreate(pwm_1,time_high,cycle);
+   
   while(1){
 	
  	
@@ -71,6 +77,14 @@ int main (int argc, char *argv[])
 
 
     return 0;
+}
+void pwm(int8_t valacel){
+
+        valacel=(valacel*17)/100;
+        if(valacel < 7){
+        valacel=7;
+        }
+        softPwmWrite(pwm_1, valacel);
 }
 
 void i2ctransfer (void)
@@ -236,6 +250,7 @@ void *SendMessages (void *ptr)
 	i2ctransfer();
         servidorRespuesta.DT=bus; 
 	servidorRespuesta.CS=~(servidorRespuesta.SOF+servidorRespuesta.SEN+servidorRespuesta.DT); 
+	 pwm(bus);
 	iWriteRc = send(listSocket[socketIndex], pservidorRespuesta , sizeof(pservidorRespuesta), 0);
           //If there was an error writing to the socket then
           //we shutdown the socket to let other the connection.
